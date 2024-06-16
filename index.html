@@ -133,7 +133,7 @@
                 color: var(--text-color-blue);
             }
             .highlighted {
-                background-color: var(--text-color-blue);
+                background-color: rgba(56, 189, 248, 0.8);
                 color: var(--bg-color-secondary);
             }
             #no-results-container {
@@ -171,7 +171,12 @@
             <div id="input-container">
                 <div id="search-box">
                     <select id="search-dropdown" name="search-options"></select>
-                    <input type="text" id="search" placeholder="Type to start searching..." />
+                    <input
+                        type="text"
+                        id="search"
+                        placeholder="Type to start searching..."
+                        autocomplete="off"
+                    />
                     <svg
                         id="search-icon"
                         xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +194,7 @@
             <div id="link-container"></div>
             <div id="no-results-container" hidden>
                 <div id="no-results" class="card">
-                    No results found! Press Enter to search on
+                    No links found! Press Enter to search on
                     <span id="search-engine">Google</span>.
                 </div>
             </div>
@@ -368,7 +373,7 @@
                             let card = document.createElement('a')
                             card.className = 'card'
                             if (linkIndex === 0 && itemIndex === 0) {
-                                card.classList.add('highlighted') // Add 'highlighted' class to the first link
+                                card.classList.add('highlighted')
                             }
                             card.href = item.url
                             card.target = '_blank'
@@ -403,18 +408,16 @@
             }
 
             let isValidDomain = domain => {
-                const domainRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-                return domainRegex.test(domain)
+                const domainWithPathOrQueryRegex =
+                    /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9\/._-]*)?(\?[a-zA-Z0-9=&._-]+)?$/
+                return domainWithPathOrQueryRegex.test(domain)
             }
 
             let searchWebsite = query => {
                 if (isValidDomain(query)) {
                     window.open('https://' + query, '_blank')
-                    return
                 } else {
-                    let searchEngine = searchEngines.find(
-                        engine => engine.name === searchDropdown.value
-                    )
+                    let searchEngine = getCurrentSearchEngine()
                     let searchUrl = searchEngine ? searchEngine.url : searchEngines[0].url
                     window.open(searchUrl + encodeURIComponent(query), '_blank')
                 }
@@ -438,30 +441,31 @@
                 let highlightedLink = document.querySelector('.highlighted')
                 if (highlightedLink) {
                     highlightedLink.classList.remove('highlighted')
-                    let newHighlightedLink
-                    if (direction === 'down') {
-                        newHighlightedLink = highlightedLink.nextElementSibling
-                            ? highlightedLink.nextElementSibling
-                            : highlightedLink.parentElement.nextElementSibling
-                              ? highlightedLink.parentElement.nextElementSibling.firstElementChild
-                              : document.querySelector('.card') // Restart from the first '.card' if at the end
-                    } else {
-                        newHighlightedLink = highlightedLink.previousElementSibling
-                            ? highlightedLink.previousElementSibling
-                            : highlightedLink.parentElement.previousElementSibling
-                              ? highlightedLink.parentElement.previousElementSibling
-                                    .lastElementChild
-                              : document.querySelector('.card:last-child') // Move to the last '.card' if at the beginning
-                    }
+                    let newHighlightedLink = highlightedLink
+                    do {
+                        if (direction === 'down') {
+                            newHighlightedLink = newHighlightedLink.nextElementSibling
+                                ? newHighlightedLink.nextElementSibling
+                                : newHighlightedLink.parentElement.nextElementSibling
+                                  ? newHighlightedLink.parentElement.nextElementSibling
+                                        .firstElementChild
+                                  : document.querySelector('.card')
+                        } else {
+                            newHighlightedLink = newHighlightedLink.previousElementSibling
+                                ? newHighlightedLink.previousElementSibling
+                                : newHighlightedLink.parentElement.previousElementSibling
+                                  ? newHighlightedLink.parentElement.previousElementSibling
+                                        .lastElementChild
+                                  : document.querySelector('.card:last-child')
+                        }
+                    } while (
+                        newHighlightedLink &&
+                        (newHighlightedLink.tagName === 'DIV' ||
+                            newHighlightedLink.classList.contains('category'))
+                    )
                     newHighlightedLink.classList.add('highlighted')
                 }
             }
-
-            document.addEventListener('keydown', event => {
-                if (document.activeElement !== searchInput) {
-                    searchInput.focus()
-                }
-            })
 
             document.addEventListener('DOMContentLoaded', () => {
                 renderLinks(links)
@@ -477,20 +481,25 @@
 
             searchInput.addEventListener('input', filterLinks)
 
-            searchInput.addEventListener('keypress', event => {
-                if (event.key === 'Enter') {
-                    let query = searchInput.value
-                    if (query) searchWebsite(query)
-                }
-            })
-
             document.addEventListener('keydown', event => {
                 if (event.key === 'Escape') {
+                    event.preventDefault()
                     searchInput.value = ''
                     filterLinks()
                 } else if (event.key === 'Tab') {
                     event.preventDefault()
                     switchHighlightedLink(event.shiftKey ? 'up' : 'down')
+                } else if (event.key === 'Enter') {
+                    event.preventDefault()
+                    const highlightedLink = document.querySelector('a.highlighted')
+                    if (highlightedLink && highlightedLink.href) {
+                        window.open(highlightedLink.href, '_blank')
+                    } else {
+                        let query = searchInput.value
+                        if (query) searchWebsite(query)
+                    }
+                } else {
+                    searchInput.focus()
                 }
             })
         </script>
