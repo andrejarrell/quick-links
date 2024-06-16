@@ -4,7 +4,7 @@ Quick Links was created to solve the problem of not being able to sync the bookm
 
 ## Screenshot
 
-![Screenshot](https://github.com/andrejarrell/quick-links/assets/33952641/6131c4a6-52ea-4942-a991-d6b33ad91ca2)
+![Screenshot](https://github.com/andrejarrell/quick-links/assets/33952641/9dfa96b2-c981-4375-ae0b-31649480790a)
 
 ## Setups
 
