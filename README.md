@@ -23,4 +23,4 @@ Quick Links was created to solve the problem of not being able to sync the bookm
 -   If no links are found, press `Enter` to open the selected search engine with the search query
 -   If the search query is a URL, press `Enter` to open the URL
 -   Press `Esc` to clear the search query
--   Press `↓` or `↑` to switch between search engines
+-   Press `▼` or `▲` to switch between search engines
