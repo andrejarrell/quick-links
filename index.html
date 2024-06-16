@@ -138,7 +138,7 @@
                 color: var(--text-color-blue);
             }
             .highlighted {
-                background-color: rgba(56, 189, 248, 0.8);
+                background-color: rgba(56, 189, 248, 0.7);
                 color: var(--bg-color-secondary);
             }
             #no-results-container {
@@ -205,7 +205,8 @@
             </div>
             <footer>
                 <span class="pill">Esc</span> = Clear, <span class="pill">Tab</span> = Cycle,
-                <span class="pill">Enter</span> = Open, <span class="pill">↑</span> = Up
+                <span class="pill">Enter</span> = Open, <span class="pill">↓↑</span> = Switch
+            </footer>
         </div>
         <script>
             const links = [
@@ -348,6 +349,14 @@
                 {
                     name: 'Bing',
                     url: 'https://www.bing.com/search?q='
+                },
+                {
+                    name: 'DuckDuckGo',
+                    url: 'https://www.duckduckgo.com/?q='
+                },
+                {
+                    name: 'Ecosia',
+                    url: 'https://www.ecosia.org/search?q='
                 }
             ]
 
@@ -441,6 +450,33 @@
                 }
             }
 
+            let switchSearchEngine = direction => {
+                const numberOfOptions = searchDropdown.options.length
+                if (direction === 'up') {
+                    // Move selection up
+                    if (searchDropdown.selectedIndex > 0) {
+                        searchDropdown.selectedIndex--
+                    } else {
+                        searchDropdown.selectedIndex = numberOfOptions - 1 // Loop back to the end if at the start
+                    }
+                } else if (direction === 'down') {
+                    // Move selection down
+                    if (searchDropdown.selectedIndex < numberOfOptions - 1) {
+                        searchDropdown.selectedIndex++
+                    } else {
+                        searchDropdown.selectedIndex = 0 // Loop back to the start if at the end
+                    }
+                }
+
+                // Update the display and save the selection
+                searchEngineSpan.textContent =
+                    searchDropdown.options[searchDropdown.selectedIndex].value
+                localStorage.setItem(
+                    'selectedSearchEngine',
+                    searchDropdown.options[searchDropdown.selectedIndex].value
+                )
+            }
+
             let switchHighlightedLink = direction => {
                 let highlightedLink = document.querySelector('.highlighted')
                 if (highlightedLink) {
@@ -502,6 +538,12 @@
                         let query = searchInput.value
                         if (query) searchWebsite(query)
                     }
+                } else if (event.key === 'ArrowDown') {
+                    event.preventDefault()
+                    switchSearchEngine('down')
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault()
+                    switchSearchEngine('up')
                 } else {
                     searchInput.focus()
                 }
