@@ -93,7 +93,7 @@
             }
             #search-icon {
                 position: absolute;
-                right: 20px;
+                right: 24px;
                 width: 20px;
                 height: 20px;
                 fill: var(--text-color-secondary);
@@ -204,8 +204,8 @@
                 </div>
             </div>
             <footer>
-                <span class="pill">Esc</span> = Clear, <span class="pill">Tab</span> = Cycle,
-                <span class="pill">Enter</span> = Open, <span class="pill">↓↑</span> = Switch
+                <span class="pill">Tab</span> = Cycle, <span class="pill">Enter</span> = Open,
+                <span class="pill">Esc</span> = Clear, <span class="pill">▼▲</span> = Switch
             </footer>
         </div>
         <script>
@@ -353,10 +353,6 @@
                 {
                     name: 'DuckDuckGo',
                     url: 'https://www.duckduckgo.com/?q='
-                },
-                {
-                    name: 'Ecosia',
-                    url: 'https://www.ecosia.org/search?q='
                 }
             ]
 
@@ -444,31 +440,35 @@
                     searchDropdown.appendChild(option)
                 }
                 const savedEngine = localStorage.getItem('selectedSearchEngine')
-                if (savedEngine) {
+                const engineExists = searchEngines.some(engine => engine.name === savedEngine)
+                if (savedEngine && engineExists) {
                     searchDropdown.value = savedEngine
                     searchEngineSpan.textContent = savedEngine
+                } else {
+                    localStorage.removeItem('selectedSearchEngine')
+                    if (searchEngines.length > 0) {
+                        searchDropdown.value = searchEngines[0].name
+                        searchEngineSpan.textContent = searchEngines[0].name
+                        localStorage.setItem('selectedSearchEngine', searchEngines[0].name)
+                    }
                 }
             }
 
             let switchSearchEngine = direction => {
                 const numberOfOptions = searchDropdown.options.length
                 if (direction === 'up') {
-                    // Move selection up
                     if (searchDropdown.selectedIndex > 0) {
                         searchDropdown.selectedIndex--
                     } else {
-                        searchDropdown.selectedIndex = numberOfOptions - 1 // Loop back to the end if at the start
+                        searchDropdown.selectedIndex = numberOfOptions - 1
                     }
                 } else if (direction === 'down') {
-                    // Move selection down
                     if (searchDropdown.selectedIndex < numberOfOptions - 1) {
                         searchDropdown.selectedIndex++
                     } else {
-                        searchDropdown.selectedIndex = 0 // Loop back to the start if at the end
+                        searchDropdown.selectedIndex = 0
                     }
                 }
-
-                // Update the display and save the selection
                 searchEngineSpan.textContent =
                     searchDropdown.options[searchDropdown.selectedIndex].value
                 localStorage.setItem(
