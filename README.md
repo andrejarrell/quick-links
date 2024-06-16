@@ -4,14 +4,7 @@ Quick Links was created to solve the problem of not being able to sync the bookm
 
 ## Screenshot
 
-![Screen Shot 2024-06-16 at 02 16 53](https://github.com/andrejarrell/quick-links/assets/33952641/b4421ed5-28aa-4ed8-a424-3c704b3ea990)
-
-## Features
-
--   Customizable categories and links
--   Search bar to filter links
--   Dark mode
--   Responsive design
+![Screenshot](https://github.com/andrejarrell/quick-links/assets/33952641/bbf14f5d-6a2e-4dd2-9b3b-7946662a14e4)
 
 ## Usage
 
